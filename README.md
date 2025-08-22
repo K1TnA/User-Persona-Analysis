@@ -1,92 +1,147 @@
-# user-persona-Analysis
-## TASK - <br><br>
-1. Takes as input a reddit user’s profile URL.<br>
-Example: <br> 
-https://www.reddit.com/user/kojied/ <br>
-https://www.reddit.com/user/Hungry-Move-6603/ <br>
-2. Scrapes **comments and posts** created by the redditor.<br>
-3. Builds a **User Persona** based on details found on their reddit. <br><br>
-## APPROACH -<br><br>
+# User Persona Analysis
 
-### Web Scraping <br>
-**Features**<br>
-1) Asynchronous scraping using httpx.AsyncClient for improved performance.<br>
-2) Parses key post details: title, author, score, comment count, subreddit, etc.<br>
-3) Follows pagination and supports scraping multiple pages (max_pages).<br>
-4) Lightweight custom logger for console output.<br>
+Scrape a Reddit user’s public activity (posts + comments) and generate a concise **User Persona** from their behavior and content.
 
-Compatible with the "new", "top", and "controversial" post sort options.
-
-**Key Libraries**<br>
-1) **httpx** – for asynchronous web requests.<br>
-2) **parsel** – for XPath-based HTML parsing.<br>
-3) **pandas** – for storing the Data.<br>
-## How to Run Scraping.ipynb
-I have written all the code in ***Scraping.ipynb*** File. <br><br>
-**How to use**<br>
-Just provide the username and run all the  cells in the jupyter notebook.<br>
-```bash
-posts = await scrape_user_posts("reddit_username", sort="top", max_pages=3)
-```
-**This will scrape up to 3 pages of top posts from the specified user**.<br>
-
-Same for comments -
-```bash
-comments = await scrape_user_comments("reddit_username", sort="top", max_pages=3)
-```
-**Saving the Data as CSV_FILES**<br><br>
-*{username}_posts.csv* <br>
-*{username}_comments.csv*<br>
+> **Input:** A Reddit profile URL (e.g.  
+> `https://www.reddit.com/user/kojied/`,  
+> `https://www.reddit.com/user/Hungry-Move-6603/`)  
+> **Output:** CSVs of posts/comments + a TXT persona summary.
 
 ---
 
-### Generating User Persona -<br><br>
-1) Load the CSV files using Pandas. <br><br>
-2) This project uses **LangChain** to build a prompt pipeline that sends Reddit user data (posts + comments) to a **local LLM (LLaMA 3 via Ollama)**.<br><br>
-3) LangChain handles prompt formatting and response chaining to generate a rich user persona based on online behavior.<br><br>
+## 🚀 Features
 
-# How to run User_Persona.ipynb
-##  Setup Instructions for Local LLaMA 3 (Ollama)
+- **Asynchronous scraping** with `httpx.AsyncClient` for speed.
+- Parses key post fields (title, author, score, comments, subreddit, etc.).
+- Follows pagination; supports multi-page scraping via `max_pages`.
+- Works with `new`, `top`, and `controversial` sorts.
+- **Persona builder** powered by **LangChain** + **Ollama (LLaMA 3)** running locally—no API key needed.
 
-This notebook uses the `llama3` model via **Ollama**, a tool that lets you run large language models locally without needing an OpenAI API key.
+---
 
-###  Steps to Use This Notebook
+## 🧰 Tech Stack
 
-1. **Install Ollama** (if not already):
-   - Download from: https://ollama.com
-   - Follow the installation steps for your operating system.
+- **Python**, **Jupyter Notebooks**
+- **Scraping:** `httpx`, `parsel`
+- **Data:** `pandas`
+- **LLM Pipeline:** `langchain`, `langchain-community`, **Ollama** (LLaMA 3)
 
-2. **Pull the LLaMA 3 model locally**:
-   Open your terminal or command prompt and run:<br>
-   
-   ollama pull llama3
+---
 
-   
-This will download the model (~4–8GB depending on version).
+## 📁 Project Structure
 
-3. **Start the Ollama server**:
-In the terminal, run:
+User-Persona-Analysis/
+│
+├─ Hungry-Move-6603_posts.csv
+├─ Hungry-Move-6603_comments.csv
+├─ Hungry-Move-6603_persona_output.txt
+│
+├─ kojied_posts.csv
+├─ kojied_comments.csv
+├─ Kojied_persona_output.txt
+│
+├─ Scraping.ipynb # Asynchronous scraping workflow
+├─ User_Persona.ipynb # Persona generation with LangChain + Ollama
+├─ README.md
+└─ .gitignore
+
+
+---
+
+## 🖥️ Getting Started
+
+1) Clone the repo
+2) Install dependencies
+
+Create/activate a virtual environment (recommended), then:
+
+pip install -r requirements.txt
+
+
+If you don’t have requirements.txt, use:
+
+pip install httpx parsel pandas jupyter langchain langchain-community
+
+3) Launch Jupyter
+jupyter notebook
+
+
+Open:
+
+Scraping.ipynb → to collect data
+
+User_Persona.ipynb → to generate the persona
+
+🕸️ Scraping Usage (in Scraping.ipynb)
+
+Provide a username (not the full URL) and run all cells.
+
+# Example (async usage inside the notebook):
+posts = await scrape_user_posts("reddit_username", sort="top", max_pages=3)
+comments = await scrape_user_comments("reddit_username", sort="top", max_pages=3)
+
+
+Saved outputs
+
+{username}_posts.csv
+{username}_comments.csv
+
+🧠 Persona Generation (in User_Persona.ipynb)
+
+This notebook loads the CSVs with pandas, formats a prompt via LangChain, and calls a local LLM (LLaMA 3 via Ollama) to produce a persona summary.
+
+Setup Ollama (LLaMA 3)
+
+Install Ollama: https://ollama.com
+
+Pull the model:
+
+ollama pull llama3
+
+
+Run the model server:
 
 ollama run llama3
 
-This will start the model server on `http://localhost:11434`. Keep this terminal running in the background.
 
-4.  **Now you can run the code cell below** to use LLaMA 3 locally with LangChain.
+Keep this terminal open (Ollama serves on http://localhost:11434).
 
->  Note: Once the model is pulled, no internet connection is required — all generation happens locally.<br><br>
+Then run the notebook cells to generate persona outputs like:
 
-## Dependncies required 
-```bash
-!pip install -q langchain langchain-community pandas
-```
-# Sample_Output(Saved as .txt file) 
-1) ***Hungry-Move-6603_persona_output.txt***
-2) ***kojied_persona_output.txt***
+Hungry-Move-6603_persona_output.txt
+Kojied_persona_output.txt
+
+🧾 Example Output (excerpt)
+User: Hungry-Move-6603
+- Interests: Technology, Gaming, Online Communities
+- Personality Traits: Curious, Engaged, Helpful
+- Communication Style: Casual, Community-Oriented
+
+📦 requirements.txt (suggested)
+
+If you want a ready file, use this:
+
+httpx>=0.27.0
+parsel>=1.9.1
+pandas>=2.2.2
+jupyter>=1.0.0
+langchain>=0.2.0
+langchain-community>=0.2.0
 
 
+Ollama is installed separately from https://ollama.com
+ (not via pip).
 
+⚠️ Notes
 
+Scraping respects Reddit’s public HTML. For heavy or authenticated use, consider the Reddit API and follow their Terms of Service.
 
+Keep max_pages reasonable to avoid rate issues.
 
+Large CSVs can be ignored from Git with .gitignore if needed.
 
+✨ Author
 
+Ankit Kumar — @K1TnA
+
+📧 ankitk192004@gmail.com
